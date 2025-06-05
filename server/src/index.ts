@@ -9,7 +9,7 @@ import bookingRoutes from './routes/bookingRoutes';
 import recommendationRoutes from './routes/recommendationRoutes';
 import adminRoutes from './routes/adminRoutes';
 import chatRoutes from './routes/chatRoutes';
-import paymentRoutes from './routes/paymentRoutes';
+// import paymentRoutes from './routes/paymentRoutes';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -34,7 +34,7 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/chat', chatRoutes);
-app.use('/api/payments', paymentRoutes);
+// app.use('/api/payments', paymentRoutes);
 
 // Basic route
 app.get('/', (req, res) => {
