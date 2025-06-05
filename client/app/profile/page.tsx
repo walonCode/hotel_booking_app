@@ -1,395 +1,297 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import type React from "react"
+
+import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Camera, Mail, Phone, MapPin, Calendar, Edit2, Save, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { LoadingSpinner } from "@/components/ui/loading-spinner"
-import { User, Mail, Phone, MapPin, Star, Settings, Shield, Bell } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
+import { getUserProfile, type User } from "@/lib/api"
 
 export default function ProfilePage() {
-  const [isLoading, setIsLoading] = useState(false)
-  const [profile, setProfile] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "+232 XX XXX XXXX",
-    city: "Freetown",
-    bio: "Travel enthusiast exploring the beautiful landscapes of Sierra Leone.",
-    joinDate: "2024-01-15",
-    totalBookings: 12,
-    membershipLevel: "Gold",
+  const { toast } = useToast()
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [editing, setEditing] = useState(false)
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    bio: "",
+    location: "",
+    dateOfBirth: "",
+    gender: "",
   })
 
-  const [preferences, setPreferences] = useState({
-    emailNotifications: true,
-    smsNotifications: false,
-    marketingEmails: true,
-    bookingReminders: true,
-    currency: "USD",
-    language: "English",
-  })
+  useEffect(() => {
+    fetchUserProfile()
+  }, [])
 
-  const handleProfileUpdate = async () => {
-    setIsLoading(true)
+  const fetchUserProfile = async () => {
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      console.log("Profile updated:", profile)
+      setLoading(true)
+      const userData = await getUserProfile("user1")
+      setUser(userData)
+      setFormData({
+        name: userData.name,
+        email: userData.email,
+        phone: "+1 (555) 123-4567",
+        bio: "Travel enthusiast who loves exploring new places and cultures.",
+        location: "New York, USA",
+        dateOfBirth: "1990-05-15",
+        gender: "male",
+      })
     } catch (error) {
-      console.error("Profile update failed:", error)
+      toast({
+        title: "Error",
+        description: "Failed to load profile. Please try again.",
+        variant: "destructive",
+      })
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
-  const handlePreferencesUpdate = async () => {
-    setIsLoading(true)
+  const handleSave = async () => {
     try {
-      // Mock API call
+      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      console.log("Preferences updated:", preferences)
+
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been successfully updated.",
+      })
+      setEditing(false)
     } catch (error) {
-      console.error("Preferences update failed:", error)
-    } finally {
-      setIsLoading(false)
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      })
     }
   }
 
-  return (
-    <div className="min-h-screen bg-off-white">
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  if (loading) {
+    return (
       <div className="container py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-soft-black mb-4">My Profile</h1>
-          <p className="text-slate-gray text-lg">Manage your account settings and preferences</p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Profile Summary */}
-          <div className="lg:col-span-1">
-            <Card>
-              <CardContent className="p-6 text-center">
-                <div className="h-24 w-24 bg-gradient-to-br from-royal-blue to-sky-blue rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="h-12 w-12 text-white" />
-                </div>
-                <h3 className="text-xl font-semibold text-soft-black mb-1">
-                  {profile.firstName} {profile.lastName}
-                </h3>
-                <p className="text-slate-gray text-sm mb-3">{profile.email}</p>
-                <Badge className="bg-warm-gold text-soft-black mb-4">{profile.membershipLevel} Member</Badge>
-
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-gray">Member since</span>
-                    <span className="text-soft-black">{new Date(profile.joinDate).getFullYear()}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-gray">Total bookings</span>
-                    <span className="text-soft-black">{profile.totalBookings}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-gray">Rating</span>
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-4 w-4 fill-warm-gold text-warm-gold" />
-                      <span className="text-soft-black">4.8</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Profile Details */}
-          <div className="lg:col-span-3">
-            <Tabs defaultValue="personal" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="personal" className="flex items-center space-x-2">
-                  <User className="h-4 w-4" />
-                  <span>Personal Info</span>
-                </TabsTrigger>
-                <TabsTrigger value="preferences" className="flex items-center space-x-2">
-                  <Settings className="h-4 w-4" />
-                  <span>Preferences</span>
-                </TabsTrigger>
-                <TabsTrigger value="security" className="flex items-center space-x-2">
-                  <Shield className="h-4 w-4" />
-                  <span>Security</span>
-                </TabsTrigger>
-              </TabsList>
-
-              {/* Personal Information */}
-              <TabsContent value="personal">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Personal Information</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName">First Name</Label>
-                        <div className="relative">
-                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-gray" />
-                          <Input
-                            id="firstName"
-                            value={profile.firstName}
-                            onChange={(e) => setProfile((prev) => ({ ...prev, firstName: e.target.value }))}
-                            className="pl-10"
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName">Last Name</Label>
-                        <div className="relative">
-                          <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-gray" />
-                          <Input
-                            id="lastName"
-                            value={profile.lastName}
-                            onChange={(e) => setProfile((prev) => ({ ...prev, lastName: e.target.value }))}
-                            className="pl-10"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email Address</Label>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-gray" />
-                        <Input
-                          id="email"
-                          type="email"
-                          value={profile.email}
-                          onChange={(e) => setProfile((prev) => ({ ...prev, email: e.target.value }))}
-                          className="pl-10"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number</Label>
-                        <div className="relative">
-                          <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-gray" />
-                          <Input
-                            id="phone"
-                            value={profile.phone}
-                            onChange={(e) => setProfile((prev) => ({ ...prev, phone: e.target.value }))}
-                            className="pl-10"
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="city">City</Label>
-                        <div className="relative">
-                          <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-gray" />
-                          <Input
-                            id="city"
-                            value={profile.city}
-                            onChange={(e) => setProfile((prev) => ({ ...prev, city: e.target.value }))}
-                            className="pl-10"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="bio">Bio</Label>
-                      <Textarea
-                        id="bio"
-                        placeholder="Tell us about yourself..."
-                        value={profile.bio}
-                        onChange={(e) => setProfile((prev) => ({ ...prev, bio: e.target.value }))}
-                        rows={4}
-                      />
-                    </div>
-
-                    <Button
-                      onClick={handleProfileUpdate}
-                      disabled={isLoading}
-                      className="bg-royal-blue hover:bg-royal-blue/90"
-                    >
-                      {isLoading ? (
-                        <>
-                          <LoadingSpinner size="sm" className="mr-2" />
-                          Updating...
-                        </>
-                      ) : (
-                        "Update Profile"
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Preferences */}
-              <TabsContent value="preferences">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Preferences & Notifications</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                      <h4 className="text-lg font-semibold text-soft-black flex items-center space-x-2">
-                        <Bell className="h-5 w-5" />
-                        <span>Notifications</span>
-                      </h4>
-
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label htmlFor="emailNotifications">Email Notifications</Label>
-                            <p className="text-sm text-slate-gray">Receive booking confirmations and updates</p>
-                          </div>
-                          <input
-                            type="checkbox"
-                            id="emailNotifications"
-                            checked={preferences.emailNotifications}
-                            onChange={(e) =>
-                              setPreferences((prev) => ({ ...prev, emailNotifications: e.target.checked }))
-                            }
-                            className="rounded"
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label htmlFor="smsNotifications">SMS Notifications</Label>
-                            <p className="text-sm text-slate-gray">Receive text messages for urgent updates</p>
-                          </div>
-                          <input
-                            type="checkbox"
-                            id="smsNotifications"
-                            checked={preferences.smsNotifications}
-                            onChange={(e) =>
-                              setPreferences((prev) => ({ ...prev, smsNotifications: e.target.checked }))
-                            }
-                            className="rounded"
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label htmlFor="marketingEmails">Marketing Emails</Label>
-                            <p className="text-sm text-slate-gray">Receive special offers and promotions</p>
-                          </div>
-                          <input
-                            type="checkbox"
-                            id="marketingEmails"
-                            checked={preferences.marketingEmails}
-                            onChange={(e) => setPreferences((prev) => ({ ...prev, marketingEmails: e.target.checked }))}
-                            className="rounded"
-                          />
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label htmlFor="bookingReminders">Booking Reminders</Label>
-                            <p className="text-sm text-slate-gray">Get reminded about upcoming trips</p>
-                          </div>
-                          <input
-                            type="checkbox"
-                            id="bookingReminders"
-                            checked={preferences.bookingReminders}
-                            onChange={(e) =>
-                              setPreferences((prev) => ({ ...prev, bookingReminders: e.target.checked }))
-                            }
-                            className="rounded"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="currency">Preferred Currency</Label>
-                        <select
-                          id="currency"
-                          value={preferences.currency}
-                          onChange={(e) => setPreferences((prev) => ({ ...prev, currency: e.target.value }))}
-                          className="w-full p-2 border rounded-md"
-                        >
-                          <option value="USD">USD ($)</option>
-                          <option value="EUR">EUR (€)</option>
-                          <option value="GBP">GBP (£)</option>
-                          <option value="SLL">SLL (Le)</option>
-                        </select>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="language">Language</Label>
-                        <select
-                          id="language"
-                          value={preferences.language}
-                          onChange={(e) => setPreferences((prev) => ({ ...prev, language: e.target.value }))}
-                          className="w-full p-2 border rounded-md"
-                        >
-                          <option value="English">English</option>
-                          <option value="Krio">Krio</option>
-                          <option value="French">French</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <Button
-                      onClick={handlePreferencesUpdate}
-                      disabled={isLoading}
-                      className="bg-royal-blue hover:bg-royal-blue/90"
-                    >
-                      {isLoading ? (
-                        <>
-                          <LoadingSpinner size="sm" className="mr-2" />
-                          Updating...
-                        </>
-                      ) : (
-                        "Save Preferences"
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Security */}
-              <TabsContent value="security">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Security Settings</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="space-y-4">
-                      <div className="border rounded-lg p-4">
-                        <h4 className="font-semibold text-soft-black mb-2">Change Password</h4>
-                        <p className="text-slate-gray text-sm mb-4">Update your password to keep your account secure</p>
-                        <Button variant="outline">Change Password</Button>
-                      </div>
-
-                      <div className="border rounded-lg p-4">
-                        <h4 className="font-semibold text-soft-black mb-2">Two-Factor Authentication</h4>
-                        <p className="text-slate-gray text-sm mb-4">Add an extra layer of security to your account</p>
-                        <Button variant="outline">Enable 2FA</Button>
-                      </div>
-
-                      <div className="border rounded-lg p-4">
-                        <h4 className="font-semibold text-soft-black mb-2">Login Sessions</h4>
-                        <p className="text-slate-gray text-sm mb-4">Manage your active login sessions</p>
-                        <Button variant="outline">View Sessions</Button>
-                      </div>
-
-                      <div className="border rounded-lg p-4 border-red-200">
-                        <h4 className="font-semibold text-red-600 mb-2">Delete Account</h4>
-                        <p className="text-slate-gray text-sm mb-4">Permanently delete your account and all data</p>
-                        <Button variant="destructive">Delete Account</Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
+        <div className="mx-auto max-w-2xl">
+          <div className="animate-pulse space-y-6">
+            <div className="h-32 w-32 rounded-full bg-gray-200 mx-auto" />
+            <div className="space-y-4">
+              <div className="h-4 bg-gray-200 rounded w-1/4" />
+              <div className="h-4 bg-gray-200 rounded w-1/2" />
+              <div className="h-4 bg-gray-200 rounded w-1/3" />
+            </div>
           </div>
         </div>
       </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="container py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900">Profile not found</h1>
+          <p className="text-gray-600">Unable to load your profile information.</p>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container py-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mx-auto max-w-2xl"
+      >
+        <Card>
+          <CardHeader className="text-center">
+            <div className="relative mx-auto mb-4">
+              <Avatar className="h-32 w-32">
+                <AvatarImage src={user.avatar || "/placeholder.svg"} alt={user.name} />
+                <AvatarFallback className="text-2xl">
+                  {user.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+              <Button size="icon" variant="outline" className="absolute bottom-0 right-0 rounded-full">
+                <Camera className="h-4 w-4" />
+              </Button>
+            </div>
+            <CardTitle className="text-2xl">{user.name}</CardTitle>
+            <CardDescription>Manage your profile information</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex justify-end">
+              {editing ? (
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={() => setEditing(false)}>
+                    <X className="mr-2 h-4 w-4" />
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSave}>
+                    <Save className="mr-2 h-4 w-4" />
+                    Save Changes
+                  </Button>
+                </div>
+              ) : (
+                <Button onClick={() => setEditing(true)}>
+                  <Edit2 className="mr-2 h-4 w-4" />
+                  Edit Profile
+                </Button>
+              )}
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="name">Full Name</Label>
+                <div className="relative">
+                  <Input
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    disabled={!editing}
+                    className="pl-10"
+                  />
+                  <Edit2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    disabled={!editing}
+                    className="pl-10"
+                  />
+                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <div className="relative">
+                  <Input
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    disabled={!editing}
+                    className="pl-10"
+                  />
+                  <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="location">Location</Label>
+                <div className="relative">
+                  <Input
+                    id="location"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    disabled={!editing}
+                    className="pl-10"
+                  />
+                  <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="dateOfBirth">Date of Birth</Label>
+                <div className="relative">
+                  <Input
+                    id="dateOfBirth"
+                    name="dateOfBirth"
+                    type="date"
+                    value={formData.dateOfBirth}
+                    onChange={handleInputChange}
+                    disabled={!editing}
+                    className="pl-10"
+                  />
+                  <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gender</Label>
+                <Select
+                  value={formData.gender}
+                  onValueChange={(value) => setFormData((prev) => ({ ...prev, gender: value }))}
+                  disabled={!editing}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea
+                id="bio"
+                name="bio"
+                value={formData.bio}
+                onChange={handleInputChange}
+                disabled={!editing}
+                placeholder="Tell us about yourself..."
+                rows={4}
+              />
+            </div>
+
+            <div className="rounded-lg bg-light-gray p-4">
+              <h3 className="mb-2 font-semibold">Account Statistics</h3>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-sky-blue">{user.bookings.length}</div>
+                  <div className="text-sm text-gray-600">Total Bookings</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-sky-blue">
+                    {user.bookings.filter((b) => b.status === "confirmed").length}
+                  </div>
+                  <div className="text-sm text-gray-600">Confirmed</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-sky-blue">2</div>
+                  <div className="text-sm text-gray-600">Years Member</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   )
 }

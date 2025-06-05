@@ -1,93 +1,153 @@
 import Link from "next/link"
-import { MapPin, Phone, Mail, Facebook, Twitter, Instagram } from "lucide-react"
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
-export function Footer() {
+export default function Footer() {
   return (
-    <footer className="bg-soft-black text-off-white">
-      <div className="container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer className="bg-gradient-to-br from-deep-blue to-deep-blue/95 text-white">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-4">
           {/* Brand */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-royal-blue to-sky-blue flex items-center justify-center">
-                <MapPin className="h-5 w-5 text-white" />
-              </div>
-              <span className="text-xl font-bold">
-                Sierra<span className="text-sky-blue">Stay</span>
+          <div className="lg:col-span-1">
+            <div className="mb-6">
+              <span className="font-poppins text-3xl font-bold">
+                Stay<span className="text-sky-blue">Ease</span>
               </span>
+              <p className="text-sm text-gray-300 mt-2">Sierra Leone's Premier Booking Platform</p>
             </div>
-            <p className="text-slate-gray text-sm">
-              Discover the beauty of Sierra Leone through our curated selection of hotels and guesthouses.
+            <p className="mb-6 text-gray-300 leading-relaxed">
+              Your trusted partner for finding perfect accommodations across Sierra Leone. We make travel booking
+              simple, secure, and enjoyable for every Sierra Leonean and visitor.
             </p>
             <div className="flex space-x-4">
-              <Facebook className="h-5 w-5 text-slate-gray hover:text-sky-blue cursor-pointer transition-colors" />
-              <Twitter className="h-5 w-5 text-slate-gray hover:text-sky-blue cursor-pointer transition-colors" />
-              <Instagram className="h-5 w-5 text-slate-gray hover:text-sky-blue cursor-pointer transition-colors" />
+              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-white/10">
+                <Facebook className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-white/10">
+                <Instagram className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-white/10">
+                <Twitter className="h-5 w-5" />
+              </Button>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-warm-gold">Quick Links</h3>
-            <div className="space-y-2">
-              <Link href="/hotels" className="block text-slate-gray hover:text-sky-blue transition-colors">
-                Browse Hotels
-              </Link>
-              <Link href="/destinations" className="block text-slate-gray hover:text-sky-blue transition-colors">
-                Destinations
-              </Link>
-              <Link href="/about" className="block text-slate-gray hover:text-sky-blue transition-colors">
-                About Us
-              </Link>
-              <Link href="/contact" className="block text-slate-gray hover:text-sky-blue transition-colors">
-                Contact
-              </Link>
-            </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/hotels" className="text-gray-300 hover:text-white transition-colors">
+                  Find Hotels
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-gray-300 hover:text-white transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-gray-300 hover:text-white transition-colors">
+                  Contact
+                </Link>
+              </li>
+              <li>
+                <Link href="/destinations" className="text-gray-300 hover:text-white transition-colors">
+                  Popular Destinations
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="text-gray-300 hover:text-white transition-colors">
+                  Travel Blog
+                </Link>
+              </li>
+            </ul>
           </div>
 
           {/* Support */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-warm-gold">Support</h3>
-            <div className="space-y-2">
-              <Link href="/help" className="block text-slate-gray hover:text-sky-blue transition-colors">
-                Help Center
-              </Link>
-              <Link href="/booking-policy" className="block text-slate-gray hover:text-sky-blue transition-colors">
-                Booking Policy
-              </Link>
-              <Link href="/privacy" className="block text-slate-gray hover:text-sky-blue transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="/terms" className="block text-slate-gray hover:text-sky-blue transition-colors">
-                Terms of Service
-              </Link>
-            </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-6">Support</h3>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/help" className="text-gray-300 hover:text-white transition-colors">
+                  Help Center
+                </Link>
+              </li>
+              <li>
+                <Link href="/faq" className="text-gray-300 hover:text-white transition-colors">
+                  FAQs
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="text-gray-300 hover:text-white transition-colors">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="text-gray-300 hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/payment-methods" className="text-gray-300 hover:text-white transition-colors">
+                  Payment Methods
+                </Link>
+              </li>
+            </ul>
           </div>
 
-          {/* Contact Info */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-warm-gold">Contact Info</h3>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <MapPin className="h-4 w-4 text-sky-blue" />
-                <span className="text-slate-gray text-sm">Freetown, Sierra Leone</span>
+          {/* Newsletter & Contact */}
+          <div>
+            <h3 className="text-lg font-semibold mb-6">Stay Connected</h3>
+            <p className="mb-4 text-gray-300">Subscribe for exclusive deals and Sierra Leone travel tips.</p>
+            <form className="space-y-3">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                className="bg-white/10 border-white/20 text-white placeholder-gray-400 focus:border-sky-blue"
+              />
+              <Button type="submit" variant="gradient" className="w-full">
+                Subscribe
+              </Button>
+            </form>
+
+            {/* Contact Info */}
+            <div className="mt-8 space-y-3">
+              <div className="flex items-center gap-3 text-gray-300">
+                <Mail className="h-4 w-4" />
+                <span className="text-sm">info@stayease.sl</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <Phone className="h-4 w-4 text-sky-blue" />
-                <span className="text-slate-gray text-sm">+232 XX XXX XXXX</span>
+              <div className="flex items-center gap-3 text-gray-300">
+                <Phone className="h-4 w-4" />
+                <span className="text-sm">+232 76 123 456</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <Mail className="h-4 w-4 text-sky-blue" />
-                <span className="text-slate-gray text-sm">info@sierrastay.sl</span>
+              <div className="flex items-center gap-3 text-gray-300">
+                <MapPin className="h-4 w-4" />
+                <span className="text-sm">Freetown, Sierra Leone</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-slate-gray mt-8 pt-8 text-center">
-          <p className="text-slate-gray text-sm">
-            © 2024 SierraStay. All rights reserved. Made with ❤️ for Sierra Leone.
-          </p>
+        {/* Bottom Bar */}
+        <div className="mt-12 border-t border-white/10 pt-8">
+          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+            <p className="text-sm text-gray-300">
+              &copy; {new Date().getFullYear()} StayEase Sierra Leone. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6 text-sm text-gray-300">
+              <Link href="/terms" className="hover:text-white transition-colors">
+                Terms
+              </Link>
+              <Link href="/privacy" className="hover:text-white transition-colors">
+                Privacy
+              </Link>
+              <Link href="/payment-methods" className="hover:text-white transition-colors">
+                Payment
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>

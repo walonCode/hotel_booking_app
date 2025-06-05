@@ -1,21 +1,30 @@
-// Mock API functions for the booking platform
+// Mock API functions to simulate backend interactions
 
-export interface Hotel {
+// Types
+export type Hotel = {
   id: string
   name: string
   description: string
-  location: string
-  city: string
+  location: {
+    city: string
+    country: string
+    address: string
+    coordinates?: {
+      lat: number
+      lng: number
+    }
+  }
+  price: number
   rating: number
-  reviewCount: number
-  pricePerNight: number
   images: string[]
   amenities: string[]
   roomTypes: RoomType[]
-  coordinates: { lat: number; lng: number }
+  reviews: Review[]
+  verified?: boolean
+  featured?: boolean
 }
 
-export interface RoomType {
+export type RoomType = {
   id: string
   name: string
   description: string
@@ -26,333 +35,371 @@ export interface RoomType {
   available: boolean
 }
 
-export interface Booking {
+export type Review = {
+  id: string
+  userId?: string
+  userName?: string
+  rating: number
+  comment: string
+  date?: string
+  author?: string
+}
+
+export type Booking = {
   id: string
   hotelId: string
   hotelName: string
-  roomType: string
+  roomId: string
+  roomName: string
   checkIn: string
   checkOut: string
   guests: number
   totalPrice: number
   status: "confirmed" | "pending" | "cancelled"
-  customerName: string
-  customerEmail: string
+  paymentStatus: "paid" | "pending" | "failed"
 }
 
-export interface Review {
+export type User = {
   id: string
-  hotelId: string
-  customerName: string
-  rating: number
-  comment: string
-  date: string
+  name: string
+  email: string
+  avatar?: string
+  bookings: Booking[]
 }
 
-// Mock data
+export type PaymentMethod = "orange_money" | "afri_money"
+
+export type PaymentInitiateResponse = {
+  success: boolean
+  ussdCode?: string
+  reference?: string
+  error?: string
+}
+
+export type SearchFilters = {
+  location: string
+  priceRange: [number, number]
+  rating: number
+  amenities: string[]
+}
+
+// Mock data for Sierra Leone hotels
 const mockHotels: Hotel[] = [
   {
     id: "1",
-    name: "Freetown Grand Hotel",
-    description: "Luxury hotel in the heart of Freetown with stunning ocean views and world-class amenities.",
-    location: "Aberdeen, Freetown",
-    city: "Freetown",
-    rating: 4.8,
-    reviewCount: 124,
-    pricePerNight: 150,
-    images: [
-      "/placeholder.svg?height=400&width=600",
-      "/placeholder.svg?height=400&width=600",
-      "/placeholder.svg?height=400&width=600",
-    ],
-    amenities: ["WiFi", "Pool", "Restaurant", "Spa", "Gym", "Beach Access"],
-    coordinates: { lat: 8.4657, lng: -13.2317 },
+    name: "Radisson Blu Mammy Yoko Hotel",
+    description: "Luxury beachfront hotel in Aberdeen with stunning ocean views and world-class amenities.",
+    location: {
+      city: "Freetown",
+      country: "Sierra Leone",
+      address: "Aberdeen Beach, Freetown",
+    },
+    images: ["/placeholder.svg?height=400&width=600"],
+    price: 180,
+    rating: 4.5,
+    amenities: ["Free WiFi", "Pool", "Restaurant", "Parking", "Beach Access"],
     roomTypes: [
       {
-        id: "1-1",
-        name: "Deluxe Ocean View",
-        description: "Spacious room with panoramic ocean views",
-        price: 150,
+        id: "1",
+        name: "Standard Room",
+        description: "",
         capacity: 2,
-        amenities: ["Ocean View", "King Bed", "Mini Bar", "Balcony"],
-        images: ["/placeholder.svg?height=300&width=400"],
+        price: 180,
+        amenities: [],
+        images: [],
         available: true,
       },
       {
-        id: "1-2",
-        name: "Executive Suite",
-        description: "Luxurious suite with separate living area",
-        price: 250,
+        id: "2",
+        name: "Ocean View Suite",
+        description: "",
         capacity: 4,
-        amenities: ["Ocean View", "Living Room", "Kitchenette", "Balcony"],
-        images: ["/placeholder.svg?height=300&width=400"],
+        price: 280,
+        amenities: [],
+        images: [],
         available: true,
       },
     ],
+    reviews: [{ id: "1", rating: 5, comment: "Excellent service and beautiful location", author: "John D." }],
+    verified: true,
+    featured: true,
   },
   {
     id: "2",
-    name: "Bo Heritage Lodge",
-    description: "Charming eco-friendly lodge showcasing Sierra Leone's natural beauty and cultural heritage.",
-    location: "Bo Town Center",
-    city: "Bo",
-    rating: 4.5,
-    reviewCount: 89,
-    pricePerNight: 80,
-    images: ["/placeholder.svg?height=400&width=600", "/placeholder.svg?height=400&width=600"],
-    amenities: ["WiFi", "Restaurant", "Garden", "Cultural Tours", "Local Cuisine"],
-    coordinates: { lat: 7.9644, lng: -11.7383 },
+    name: "Country Lodge Hotel",
+    description: "Comfortable accommodation in the heart of Freetown with modern facilities.",
+    location: {
+      city: "Freetown",
+      country: "Sierra Leone",
+      address: "Hill Station Road, Freetown",
+    },
+    images: ["/placeholder.svg?height=400&width=600"],
+    price: 120,
+    rating: 4.2,
+    amenities: ["Free WiFi", "Restaurant", "Parking", "Business Center"],
     roomTypes: [
       {
-        id: "2-1",
-        name: "Traditional Room",
-        description: "Authentic room with local craftsmanship",
-        price: 80,
+        id: "3",
+        name: "Standard Room",
+        description: "",
         capacity: 2,
-        amenities: ["Garden View", "Queen Bed", "Local Art", "Fan"],
-        images: ["/placeholder.svg?height=300&width=400"],
+        price: 120,
+        amenities: [],
+        images: [],
+        available: true,
+      },
+      {
+        id: "4",
+        name: "Executive Suite",
+        description: "",
+        capacity: 3,
+        price: 180,
+        amenities: [],
+        images: [],
         available: true,
       },
     ],
+    reviews: [{ id: "2", rating: 4, comment: "Great location and friendly staff", author: "Sarah M." }],
+    verified: true,
   },
   {
     id: "3",
-    name: "Kenema Guesthouse",
-    description: "Comfortable guesthouse perfect for business travelers and tourists exploring the Eastern Province.",
-    location: "Kenema City Center",
-    city: "Kenema",
-    rating: 4.2,
-    reviewCount: 56,
-    pricePerNight: 60,
+    name: "Bo Heritage Hotel",
+    description: "Historic hotel in Bo with traditional Sierra Leonean charm and modern comfort.",
+    location: {
+      city: "Bo",
+      country: "Sierra Leone",
+      address: "Damballa Road, Bo",
+    },
     images: ["/placeholder.svg?height=400&width=600"],
-    amenities: ["WiFi", "Restaurant", "Conference Room", "Laundry", "Airport Transfer"],
-    coordinates: { lat: 7.8767, lng: -11.19 },
+    price: 85,
+    rating: 4.0,
+    amenities: ["Free WiFi", "Restaurant", "Cultural Tours"],
     roomTypes: [
       {
-        id: "3-1",
-        name: "Standard Room",
-        description: "Clean and comfortable standard accommodation",
-        price: 60,
+        id: "5",
+        name: "Heritage Room",
+        description: "",
         capacity: 2,
-        amenities: ["City View", "Double Bed", "Desk", "AC"],
-        images: ["/placeholder.svg?height=300&width=400"],
+        price: 85,
+        amenities: [],
+        images: [],
+        available: true,
+      },
+      {
+        id: "6",
+        name: "Family Room",
+        description: "",
+        capacity: 4,
+        price: 140,
+        amenities: [],
+        images: [],
         available: true,
       },
     ],
-  },
-  {
-    id: "4",
-    name: "Makeni Business Hotel",
-    description: "Modern business hotel with excellent facilities for corporate travelers and conferences.",
-    location: "Makeni Central",
-    city: "Makeni",
-    rating: 4.3,
-    reviewCount: 72,
-    pricePerNight: 90,
-    images: ["/placeholder.svg?height=400&width=600"],
-    amenities: ["WiFi", "Business Center", "Conference Rooms", "Restaurant", "Gym"],
-    coordinates: { lat: 8.8833, lng: -12.05 },
-    roomTypes: [
-      {
-        id: "4-1",
-        name: "Business Room",
-        description: "Professional room with work facilities",
-        price: 90,
-        capacity: 2,
-        amenities: ["City View", "Work Desk", "High-Speed WiFi", "AC"],
-        images: ["/placeholder.svg?height=300&width=400"],
-        available: true,
-      },
-    ],
+    reviews: [{ id: "3", rating: 4, comment: "Authentic experience with great hospitality", author: "Ahmed K." }],
+    verified: true,
   },
 ]
 
-const mockBookings: Booking[] = [
-  {
-    id: "b1",
-    hotelId: "1",
-    hotelName: "Freetown Grand Hotel",
-    roomType: "Deluxe Ocean View",
-    checkIn: "2024-07-15",
-    checkOut: "2024-07-18",
-    guests: 2,
-    totalPrice: 450,
-    status: "confirmed",
-    customerName: "John Doe",
-    customerEmail: "john@example.com",
-  },
-  {
-    id: "b2",
-    hotelId: "2",
-    hotelName: "Bo Heritage Lodge",
-    roomType: "Traditional Room",
-    checkIn: "2024-08-01",
-    checkOut: "2024-08-03",
-    guests: 2,
-    totalPrice: 160,
+export async function getHotels(filters?: Partial<SearchFilters>): Promise<Hotel[]> {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
+  let filteredHotels = [...mockHotels]
+
+  if (filters?.location) {
+    const location = filters.location.toLowerCase()
+    filteredHotels = filteredHotels.filter(
+      (hotel) =>
+        hotel.location.city.toLowerCase().includes(location) ||
+        hotel.location.country.toLowerCase().includes(location) ||
+        hotel.name.toLowerCase().includes(location),
+    )
+  }
+
+  if (filters?.priceRange) {
+    const [min, max] = filters.priceRange
+    filteredHotels = filteredHotels.filter((hotel) => hotel.price >= min && hotel.price <= max)
+  }
+
+  if (filters?.rating) {
+    filteredHotels = filteredHotels.filter((hotel) => hotel.rating >= filters.rating)
+  }
+
+  if (filters?.amenities && filters.amenities.length > 0) {
+    filteredHotels = filteredHotels.filter((hotel) =>
+      filters.amenities!.some((amenity) => hotel.amenities.includes(amenity)),
+    )
+  }
+
+  return filteredHotels
+}
+
+export async function getHotelById(id: string): Promise<Hotel | null> {
+  await new Promise((resolve) => setTimeout(resolve, 500))
+  return mockHotels.find((hotel) => hotel.id === id) || null
+}
+
+export async function getRoomsByHotelId(hotelId: string) {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 500))
+
+  const hotel = mockHotels.find((h) => h.id === hotelId)
+
+  if (!hotel) {
+    throw new Error("Hotel not found")
+  }
+
+  return hotel.roomTypes
+}
+
+export async function createBooking(bookingData: {
+  hotelId: string
+  roomId: string
+  checkIn: string
+  checkOut: string
+  guests: number
+  userId: string
+}) {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
+  const hotel = mockHotels.find((h) => h.id === bookingData.hotelId)
+  if (!hotel) {
+    throw new Error("Hotel not found")
+  }
+
+  const room = hotel.roomTypes.find((r) => r.id === bookingData.roomId)
+  if (!room) {
+    throw new Error("Room not found")
+  }
+
+  // Calculate number of nights
+  const checkIn = new Date(bookingData.checkIn)
+  const checkOut = new Date(bookingData.checkOut)
+  const nights = Math.ceil((checkOut.getTime() - checkIn.getTime()) / (1000 * 60 * 60 * 24))
+
+  const totalPrice = room.price * nights
+
+  const booking: Booking = {
+    id: `b${Date.now()}`,
+    hotelId: hotel.id,
+    hotelName: hotel.name,
+    roomId: room.id,
+    roomName: room.name,
+    checkIn: bookingData.checkIn,
+    checkOut: bookingData.checkOut,
+    guests: bookingData.guests,
+    totalPrice,
     status: "pending",
-    customerName: "Jane Smith",
-    customerEmail: "jane@example.com",
-  },
-]
+    paymentStatus: "pending",
+  }
 
-const mockReviews: Review[] = [
-  {
-    id: "r1",
-    hotelId: "1",
-    customerName: "Alice Johnson",
-    rating: 5,
-    comment:
-      "Absolutely stunning hotel with incredible ocean views. The staff was exceptional and the amenities were top-notch.",
-    date: "2024-06-15",
-  },
-  {
-    id: "r2",
-    hotelId: "1",
-    customerName: "Bob Wilson",
-    rating: 4,
-    comment: "Great location and beautiful rooms. The restaurant food was delicious. Highly recommend!",
-    date: "2024-06-10",
-  },
-  {
-    id: "r3",
-    hotelId: "2",
-    customerName: "Carol Brown",
-    rating: 5,
-    comment: "Loved the authentic cultural experience. The lodge perfectly showcases Sierra Leone's heritage.",
-    date: "2024-05-20",
-  },
-]
+  return booking
+}
 
-// API functions with simulated delays
-export const api = {
-  // Hotels
-  async getHotels(filters?: {
-    city?: string
-    minPrice?: number
-    maxPrice?: number
-    rating?: number
-    amenities?: string[]
-  }): Promise<Hotel[]> {
-    await new Promise((resolve) => setTimeout(resolve, 500))
+export async function getUserProfile(userId: string) {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 700))
 
-    let filteredHotels = [...mockHotels]
+  // In a real app, we would fetch the user by ID
+  // For now, just return our mock user
+  const mockUser: User = {
+    id: "user1",
+    name: "Abdul Rahman",
+    email: "abdul.rahman@example.com",
+    avatar: "/placeholder.svg?height=200&width=200",
+    bookings: [
+      {
+        id: "b1",
+        hotelId: "1",
+        hotelName: "Radisson Blu Mammy Yoko Hotel",
+        roomId: "1",
+        roomName: "Standard Room",
+        checkIn: "2023-07-15",
+        checkOut: "2023-07-20",
+        guests: 2,
+        totalPrice: 900,
+        status: "confirmed",
+        paymentStatus: "paid",
+      },
+      {
+        id: "b2",
+        hotelId: "3",
+        hotelName: "Bo Heritage Hotel",
+        roomId: "5",
+        roomName: "Heritage Room",
+        checkIn: "2023-12-24",
+        checkOut: "2023-12-28",
+        guests: 2,
+        totalPrice: 320,
+        status: "confirmed",
+        paymentStatus: "paid",
+      },
+      {
+        id: "b3",
+        hotelId: "2",
+        hotelName: "Country Lodge Hotel",
+        roomId: "3",
+        roomName: "Standard Room",
+        checkIn: "2024-03-10",
+        checkOut: "2024-03-15",
+        guests: 1,
+        totalPrice: 600,
+        status: "pending",
+        paymentStatus: "pending",
+      },
+    ],
+  }
+  return mockUser
+}
 
-    if (filters) {
-      if (filters.city) {
-        filteredHotels = filteredHotels.filter((hotel) =>
-          hotel.city.toLowerCase().includes(filters.city!.toLowerCase()),
-        )
-      }
-      if (filters.minPrice) {
-        filteredHotels = filteredHotels.filter((hotel) => hotel.pricePerNight >= filters.minPrice!)
-      }
-      if (filters.maxPrice) {
-        filteredHotels = filteredHotels.filter((hotel) => hotel.pricePerNight <= filters.maxPrice!)
-      }
-      if (filters.rating) {
-        filteredHotels = filteredHotels.filter((hotel) => hotel.rating >= filters.rating!)
-      }
-      if (filters.amenities && filters.amenities.length > 0) {
-        filteredHotels = filteredHotels.filter((hotel) =>
-          filters.amenities!.some((amenity) => hotel.amenities.includes(amenity)),
-        )
-      }
-    }
+export async function initiatePayment(data: {
+  bookingId: string
+  amount: number
+  paymentMethod: PaymentMethod
+  phoneNumber: string
+}): Promise<PaymentInitiateResponse> {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1500))
 
-    return filteredHotels
-  },
+  // Simulate successful payment initiation for Sierra Leone mobile money
+  return {
+    success: true,
+    ussdCode: data.paymentMethod === "orange_money" ? "*144*4*6*1#" : "*555*1*1#",
+    reference: `SL-REF-${Date.now()}`,
+  }
+}
 
-  async getHotelById(id: string): Promise<Hotel | null> {
-    await new Promise((resolve) => setTimeout(resolve, 300))
-    return mockHotels.find((hotel) => hotel.id === id) || null
-  },
+export async function verifyPayment(reference: string) {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 1000))
 
-  async getRecommendedHotels(userId?: string): Promise<Hotel[]> {
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    // AI-powered recommendations (mock)
-    return mockHotels.slice(0, 3)
-  },
+  // Simulate successful payment verification (90% success rate)
+  const isSuccessful = Math.random() > 0.1
 
-  // Bookings
-  async createBooking(booking: Omit<Booking, "id" | "status">): Promise<Booking> {
-    await new Promise((resolve) => setTimeout(resolve, 800))
-    const newBooking: Booking = {
-      ...booking,
-      id: `b${Date.now()}`,
-      status: "confirmed",
-    }
-    mockBookings.push(newBooking)
-    return newBooking
-  },
+  return {
+    success: isSuccessful,
+    status: isSuccessful ? "paid" : "failed",
+    message: isSuccessful ? "Payment successful" : "Payment failed",
+  }
+}
 
-  async getBookings(userId?: string): Promise<Booking[]> {
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    return mockBookings
-  },
+export async function sendChatMessage(message: string) {
+  // Simulate API delay
+  await new Promise((resolve) => setTimeout(resolve, 800))
 
-  async getBookingById(id: string): Promise<Booking | null> {
-    await new Promise((resolve) => setTimeout(resolve, 300))
-    return mockBookings.find((booking) => booking.id === id) || null
-  },
+  const botResponses = [
+    "I can help you find the perfect accommodation in Sierra Leone. Which city are you planning to visit?",
+    "We have excellent options in Freetown, Bo, Kenema, and other cities. Are you looking for any specific amenities?",
+    "Based on your preferences, I'd recommend checking out Radisson Blu Mammy Yoko or Country Lodge Hotel in Freetown!",
+    "You can use our search filters to find accommodations by location, price, and amenities across Sierra Leone.",
+    "For the best rates in Sierra Leone, I recommend booking directly through our platform. We support Orange Money and Afri Money payments.",
+  ]
 
-  // Reviews
-  async getReviews(hotelId: string): Promise<Review[]> {
-    await new Promise((resolve) => setTimeout(resolve, 300))
-    return mockReviews.filter((review) => review.hotelId === hotelId)
-  },
-
-  async createReview(review: Omit<Review, "id" | "date">): Promise<Review> {
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    const newReview: Review = {
-      ...review,
-      id: `r${Date.now()}`,
-      date: new Date().toISOString().split("T")[0],
-    }
-    mockReviews.push(newReview)
-    return newReview
-  },
-
-  // AI Features
-  async getAIRecommendations(preferences: {
-    budget?: number
-    location?: string
-    amenities?: string[]
-  }): Promise<Hotel[]> {
-    await new Promise((resolve) => setTimeout(resolve, 600))
-    // Mock AI recommendations based on preferences
-    return mockHotels
-      .filter((hotel) => {
-        if (preferences.budget && hotel.pricePerNight > preferences.budget) return false
-        if (preferences.location && !hotel.location.toLowerCase().includes(preferences.location.toLowerCase()))
-          return false
-        return true
-      })
-      .slice(0, 4)
-  },
-
-  async getChatbotResponse(message: string): Promise<string> {
-    await new Promise((resolve) => setTimeout(resolve, 800))
-
-    const responses = {
-      greeting: "Hello! Welcome to Sierra Leone's premier hotel booking platform. How can I assist you today?",
-      booking:
-        "I'd be happy to help you with your booking. What dates are you looking for and which city would you like to stay in?",
-      recommendations:
-        "Based on your preferences, I recommend checking out our featured hotels in Freetown, Bo, and Kenema. Would you like me to show you some options?",
-      default:
-        "I'm here to help with hotel bookings, recommendations, and any questions about accommodations in Sierra Leone. What would you like to know?",
-    }
-
-    const lowerMessage = message.toLowerCase()
-    if (lowerMessage.includes("hello") || lowerMessage.includes("hi")) {
-      return responses.greeting
-    } else if (lowerMessage.includes("book") || lowerMessage.includes("reservation")) {
-      return responses.booking
-    } else if (lowerMessage.includes("recommend") || lowerMessage.includes("suggest")) {
-      return responses.recommendations
-    } else {
-      return responses.default
-    }
-  },
+  return {
+    message: botResponses[Math.floor(Math.random() * botResponses.length)],
+    timestamp: new Date().toISOString(),
+  }
 }
