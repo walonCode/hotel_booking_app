@@ -1,14 +1,16 @@
-import express from 'express';
-import { protect } from '../middleware/auth';
+import { Router } from 'express';
+import { authenticateUser } from '../middleware/auth';
+import { bookingValidation } from '../validators/schemas';
 import {
   createBooking,
   getUserBookings,
-  cancelBooking
-} from "../controllers/bookingController";
+  // getHotelBookings
+} from '../controllers/bookingController';
 
-const router = express.Router();
+const router = Router();
 
-router.route('/').post(protect, createBooking).get(protect, getUserBookings);
-router.route('/:id/cancel').put(protect, cancelBooking);
+router.post('/', authenticateUser, createBooking);
+router.get('/user/:id', authenticateUser, getUserBookings);
+// router.get('/hotel/:id', authenticateUser, getHotelBookings);
 
 export default router;

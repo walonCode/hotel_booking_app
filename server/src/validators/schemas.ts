@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { body, param, query } from 'express-validator';
 
 // User validation schemas
 export const userRegistrationSchema = z.object({
@@ -58,3 +59,38 @@ export const reviewSchema = z.object({
   rating: z.number().min(1).max(5, 'Rating must be between 1 and 5'),
   comment: z.string().min(5, 'Comment must be at least 5 characters')
 });
+
+export const bookingValidation = [
+  body('roomId').isMongoId().withMessage('Invalid room ID'),
+  body('checkIn').isISO8601().withMessage('Invalid check-in date'),
+  body('checkOut').isISO8601().withMessage('Invalid check-out date'),
+  body('guests').isInt({ min: 1 }).withMessage('Invalid number of guests')
+];
+
+export const paymentValidation = [
+  body('amount').isFloat({ min: 0 }).withMessage('Invalid amount'),
+  body('bookingId').isMongoId().withMessage('Invalid booking ID')
+];
+
+export const chatValidation = [
+  body('message').notEmpty().withMessage('Message cannot be empty'),
+  body('sessionId').optional().isString().withMessage('Invalid session ID')
+];
+
+export const hotelSearchValidation = [
+  query('city').optional().isString().withMessage('Invalid city'),
+  query('checkIn').optional().isISO8601().withMessage('Invalid check-in date'),
+  query('checkOut').optional().isISO8601().withMessage('Invalid check-out date'),
+  query('guests').optional().isInt({ min: 1 }).withMessage('Invalid number of guests'),
+  query('page').optional().isInt({ min: 1 }).withMessage('Invalid page number'),
+  query('limit').optional().isInt({ min: 1, max: 50 }).withMessage('Invalid limit')
+];
+
+export const roomValidation = [
+  body('name').notEmpty().withMessage('Room name is required'),
+  body('type').isIn(['standard', 'deluxe']).withMessage('Invalid room type'),
+  body('price').isFloat({ min: 0 }).withMessage('Invalid price'),
+  body('capacity').isInt({ min: 1 }).withMessage('Invalid capacity'),
+  body('amenities').isArray().withMessage('Amenities must be an array'),
+  body('images').isArray().withMessage('Images must be an array')
+];

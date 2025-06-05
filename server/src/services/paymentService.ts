@@ -1,30 +1,68 @@
-import Stripe from "stripe";
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2022-11-15'
-});
+interface PaymentMetadata {
+  transaction_id: string;
+  booking_id: string;
+  payment_status: 'pending' | 'completed' | 'failed';
+  user_id: string;
+}
 
-export const createPaymentIntent = async (amount: number, currency: string = 'usd') => {
+export const initiatePayment = async (bookingData: {
+  amount: number;
+  userId: string;
+  bookingId: string;
+}) => {
   try {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), // Convert to cents
-      currency
+    // TODO: Implement Monime API integration
+    const response = await fetch(process.env.MONIME_API_URL + '/payments/initiate', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.MONIME_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        amount: bookingData.amount,
+        reference: bookingData.bookingId,
+        metadata: {
+          user_id: bookingData.userId
+        }
+      })
     });
 
-    return paymentIntent;
+    const paymentData = await response.json();
+    
+    return {
+      transaction_id: paymentData.transactionId,
+      booking_id: bookingData.bookingId,
+      payment_status: 'pending',
+      user_id: bookingData.userId
+    } as PaymentMetadata;
   } catch (error) {
-    throw new Error('Payment processing failed');
+    throw new Error('Payment initiation failed');
   }
 };
 
-export const confirmPayment = async (paymentIntentId: string) => {
+export const verifyPayment = async (transactionId: string): Promise<PaymentMetadata> => {
   try {
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-    return paymentIntent.status === 'succeeded';
+    // TODO: Implement Monime payment verification
+    const response = await fetch(process.env.MONIME_API_URL + `/payments/verify/${transactionId}`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.MONIME_API_KEY}`
+      }
+    });
+
+    const verificationData = await response.json();
+    
+    return {
+      transaction_id: transactionId,
+      booking_id: verificationData.reference,
+      payment_status: verificationData.status === 'success' ? 'completed' : 'failed',
+      user_id: verificationData.metadata.user_id
+    } as PaymentMetadata;
   } catch (error) {
-    throw new Error('Payment confirmation failed');
+    throw new Error('Payment verification failed');
   }
 };
+

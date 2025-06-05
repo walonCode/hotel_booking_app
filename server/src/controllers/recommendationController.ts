@@ -1,16 +1,15 @@
 import { Request, Response } from 'express';
-import { AuthRequest } from '../middleware/auth';
 import { Hotel } from '../models/Hotel';
 import { Booking } from '../models/Booking';
 import { AIService } from '../services/aiService';
 
 // Get AI-powered recommendations
-export const getAIRecommendations = async (req: AuthRequest, res: Response) => {
+export const getAIRecommendations = async (req: Request, res: Response) => {
   try {
     const { preferences, budget, location } = req.body;
 
     // Get user's booking history
-    const userBookings = await Booking.find({ user: req.user._id })
+    const userBookings = await Booking.find({ user: req.user?.id })
       .populate('hotel')
       .sort({ createdAt: -1 });
 
