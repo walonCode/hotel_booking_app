@@ -15,6 +15,7 @@ type Room struct {
     Amenities   []string           `bson:"amenities" json:"amenities"`         // ["WiFi", "TV", "AC"]
     Images      []string           `bson:"images" json:"images"`               // image URLs or filenames
     IsAvailable bool               `bson:"is_available" json:"is_available"`   // for quick availability check
+    Number      int                `bson:"number" json:"number"`
     CreatedAt   time.Time          `bson:"created_at" json:"created_at"`
     UpdatedAt   time.Time          `bson:"updated_at" json:"updated_at"`
 }

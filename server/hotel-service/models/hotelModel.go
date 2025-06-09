@@ -18,6 +18,7 @@ type Hotel struct {
     Images      []string           `bson:"images" json:"images"`                   // URLs or filenames
     OwnerID     primitive.ObjectID `bson:"owner_id" json:"owner_id"`               // Link to the user who added it
     CreatedAt   time.Time          `bson:"created_at" json:"created_at"`
-    Rooms        int                `bson:"rooms" json:"rooms"`
+    Rooms       int                `bson:"rooms" json:"rooms"`
+    AvailableRoom int              `bson:"availableRoom" json:"availableRoom"`
     UpdatedAt   time.Time          `bson:"updated_at" json:"updated_at"`
 }
