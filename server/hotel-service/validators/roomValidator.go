@@ -8,5 +8,4 @@ type RoomRequest struct {
     Price       float64            `json:"price" validate:"required"`                 
     Capacity    int                `json:"capacity" validate:"required,numeric"`           
     Amenities   []string           `json:"amenities" validate:"required,dive"`
-    Number      int                `json:"number" validate:"required,numeric"`                      
 }

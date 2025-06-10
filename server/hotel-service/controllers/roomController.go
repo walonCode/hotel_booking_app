@@ -73,7 +73,6 @@ func AddRoom(c *gin.Context){
 	room.Capacity = req.Capacity
 	room.CreatedAt = time.Now()
 	room.UpdatedAt = time.Now()
-	room.Number = req.Number
 	room.ID = primitive.NewObjectID()
 	room.Description = req.Description
 	room.IsAvailable = true
@@ -87,7 +86,7 @@ func AddRoom(c *gin.Context){
 		return
 	}
 
-	_,err = configs.HotelCollection.UpdateOne(context.TODO(),bson.M{"_id":hotelId}, bson.M{"rooms":req.Number})
+	_,err = configs.HotelCollection.UpdateOne(context.TODO(),bson.M{"_id":hotelId}, bson.M{"$inc": bson.M{"rooms": 1, "availableRoom": 1}})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error":"failed to update the rooms in the hotel"})
 		return
@@ -129,10 +128,81 @@ func GetAllRoom(c *gin.Context){
 		return
 	}
 
-
-
+	//pagination comming later
 	c.JSON(http.StatusOK,gin.H{
 		"message":"all rooms",
 		"data": rooms,
 	})
+}
+
+
+
+func DeleteRoom(c *gin.Context){
+	idParams := c.Param("roomId")
+	var room *models.Room
+
+	roomId, err := primitive.ObjectIDFromHex(idParams)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"invalid room id"})
+		return
+	}
+
+	err = configs.RoomCollection.FindOne(context.TODO(), bson.M{"_id":roomId}).Decode(&room)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"failed to get the room with that roomId"})
+		return
+	}
+
+	_, err = configs.HotelCollection.UpdateOne(context.TODO(), bson.M{"_id": room.HotelID}, bson.M{"inc":bson.M{"rooms":-1}})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"failed to decrement the rooms in the hotel"})
+		return
+	}
+
+	_,err = configs.RoomCollection.DeleteOne(context.TODO(), bson.M{"_id":roomId})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"failed to delete room"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message":"room deleted"})
+}
+
+
+func UpdateRoom(c *gin.Context){
+	var room *models.Room
+	idParam := c.Param("roomId")
+	
+	roomId,err := primitive.ObjectIDFromHex(idParam)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"failed to get roomId"})
+		return
+	}
+
+	if err = configs.RoomCollection.FindOne(context.TODO(),bson.M{"_id":roomId}).Decode(&room); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"failed to get the room"})
+		return
+	}
+
+	_,err = configs.HotelCollection.UpdateOne(context.TODO(),bson.M{"_id":room.HotelID}, bson.M{
+		"$inc":bson.M{
+			"availableRoom":-1,
+		},
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"failed to update available rooms"})
+		return
+	}
+
+	_,err = configs.RoomCollection.UpdateOne(context.TODO(), bson.M{"_id":roomId}, bson.M{
+		"is_available":false,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError,gin.H{"error":"failed to update room"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message":"room update"})
 }
