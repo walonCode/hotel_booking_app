@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -97,6 +98,7 @@ func GetHotel(c *gin.Context){
 
 	cursor,err := configs.HotelCollection.Find(context.TODO(), bson.M{})
 	if err != nil {
+		fmt.Println("failed to get hotel")
 		c.JSON(http.StatusInternalServerError, gin.H{"error":"failed to get all the hotel"})
 		return
 	}

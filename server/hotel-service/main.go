@@ -1,11 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/walonCode/hotel_booking_app/routes"
 	// "github.com/walonCode/hotel_booking_app/configs"
 )
 
@@ -15,12 +17,28 @@ func main(){
 		log.Fatal("No .env provided")
 	}
 
+	//database connection
 	// configs.ConnectMongo()
 
-	fmt.Println("hello")
-	r := gin.Default()
+	//starting point of the server
+	app := gin.Default()
 
 
+	//middleware
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:3001/",},
+		AllowMethods:  []string{"GET","POST","PATCH","DELETE","PUT"},
+		AllowHeaders: []string{"Origin","Content-Type","Authorization"},
+		ExposeHeaders: []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge: 6 * time.Hour,
+	}))
 
-	r.Run(":8080")
+
+	//routes
+	routes.HotelRouter(app)
+	routes.RoomRouter(app)
+
+	//app running
+	app.Run(":8080")
 }
