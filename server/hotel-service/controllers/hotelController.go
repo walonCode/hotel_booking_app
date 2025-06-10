@@ -90,3 +90,45 @@ func AddHotel(c *gin.Context){
 
 	c.JSON(http.StatusCreated, gin.H{"message":"hotel added"})
 }
+
+
+func GetHotel(c *gin.Context){
+	var hotel []models.Hotel
+
+	cursor,err := configs.HotelCollection.Find(context.TODO(), bson.M{})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"failed to get all the hotel"})
+		return
+	}
+	defer cursor.Close(context.TODO())
+
+	if err := cursor.All(context.TODO(), &hotel); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":"failed to save the hotel to an array",
+		})
+		return
+	}
+
+	//pagination 
+
+	c.JSON(http.StatusOK, gin.H{"message":"all hotels", "data": hotel})
+}
+
+
+func DeleteHotel(c *gin.Context){
+	idparams := c.Param("hotelId")
+
+	hotelId,err := primitive.ObjectIDFromHex(idparams)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"invalid hotel id"})
+		return
+	}
+
+	_,err = configs.HotelCollection.DeleteOne(context.TODO(), bson.M{"_id":hotelId})
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error":"failed to delete hotel"})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, gin.H{"message":"hotel delete"})
+}
