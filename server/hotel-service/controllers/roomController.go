@@ -108,7 +108,7 @@ func AddRoom(c *gin.Context){
 func GetAllRoom(c *gin.Context){
 	var rooms []models.Room
 
-	idParams := c.Param("hotel_id")
+	idParams := c.Param("hotelId")
 	hotel_id, err := primitive.ObjectIDFromHex(idParams)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error":"invalid hotel id"})
