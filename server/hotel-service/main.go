@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -34,6 +35,11 @@ func main(){
 		MaxAge: 6 * time.Hour,
 	}))
 
+
+	//health check route
+	app.GET("/", func(c *gin.Context){
+		c.JSON(http.StatusOK,gin.H{"message":"server is up and running"})
+	})
 
 	//routes
 	routes.HotelRouter(app)
