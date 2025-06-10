@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/walonCode/hotel_booking_app/routes"
-	// "github.com/walonCode/hotel_booking_app/configs"
+	"github.com/walonCode/hotel_booking_app/configs"
 )
 
 func main(){
@@ -19,7 +19,7 @@ func main(){
 	}
 
 	//database connection
-	// configs.ConnectMongo()
+	configs.ConnectMongo()
 
 	//starting point of the server
 	app := gin.Default()
