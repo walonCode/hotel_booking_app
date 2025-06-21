@@ -25,7 +25,7 @@ app.post("/token",validateBody(loginSchema), async(c) => {
             },400)
         }
 
-        const accessToken = await Jwt.sign({id:user[0].id, username:user[0].username, exp:24*60*60}, config.JWT_SECRET, "HS256")
+        const accessToken = await Jwt.sign({id:user[0].id, roles:user[0].roles, exp:24*60*60}, config.JWT_SECRET, "HS256")
 
         return c.json({
             ok:true,
