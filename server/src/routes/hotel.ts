@@ -28,6 +28,9 @@ app.post("/", authMiddleware, role(Role.HOTEL_OWNER) ,validateBody(hotelCreateSc
             },409)
         }
 
+        //image check
+        //saving them to supabase and getting the url
+
         //creating the new hotel
         await db.insert(hotelTable).values({
             name:body.name,
@@ -79,6 +82,26 @@ app.get("/",authMiddleware, async(c) => {
             ok:false,
             error:"internal server error",
         }, 500)
+    }
+})
+
+
+app.delete("/:id",authMiddleware, role(Role.HOTEL_OWNER), async(c) => {
+    try{
+        const id = c.req.param("id")
+
+        await db.delete(hotelTable).where(eq(hotelTable.id, Number(id)))
+
+        return c.json({
+            ok:true,
+            message:"hotel deleted",
+        }, 200)
+    }catch(err){
+        config.NODE_ENV === "dev" ? console.log(err):""
+        return c.json({
+            ok:false,
+            error:"internal server error"
+        },500)
     }
 })
 
