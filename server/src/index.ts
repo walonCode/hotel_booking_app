@@ -8,7 +8,7 @@ import auth from "../src/routes/auth.js"
 import hotel from "../src/routes/hotel.js"
 import { poweredBy } from 'hono/powered-by'
 
-const app = new Hono().basePath("api/v1")
+const app = new Hono().basePath("/api/v1")
 
 //middlwares
 app.use(logger())

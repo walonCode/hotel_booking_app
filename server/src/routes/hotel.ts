@@ -6,10 +6,11 @@ import { hotelCreateSchema } from "../validators/hotel.js";
 import { db } from "../db/drizzle.js";
 import { hotelTable } from "../db/schema.js";
 import { and, eq } from "drizzle-orm";
+import { Role, role } from "../middleware/roleMiddleware.js";
 
 const app = new Hono().basePath("/hotel")
 
-app.post("/", authMiddleware, validateBody(hotelCreateSchema), async(c) => {
+app.post("/", authMiddleware, role(Role.HOTEL_OWNER) ,validateBody(hotelCreateSchema), async(c) => {
     try{
 
         //getting the userId from the auth middleware
@@ -61,7 +62,7 @@ app.get("/",authMiddleware, async(c) => {
 
         if(hotels.length === 0){
             return c.json({
-                ok:false,
+                ok:true,
                 message:"No available hotels",
                 data: [],
             },200)

@@ -15,14 +15,14 @@ export const authMiddleware = createMiddleware<{
     }
 }>(async (c, next) => {
     const authHeader = c.req.header("Authorization")
-    if(!authHeader || authHeader.startsWith("Bearer ")){
+    if(!authHeader || !authHeader.startsWith("Bearer ")){
         return c.json({
             ok:false,
             error:"unauthorized",
         },401)
     }
 
-    const token = authHeader.replace('Bearer ', " ")
+    const token = authHeader.slice(7).trim()
 
     try{
         const decoded = await Jwt.verify(token, config.JWT_SECRET) as unknown as User
