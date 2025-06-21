@@ -5,6 +5,7 @@ import { logger } from 'hono/logger'
 import { secureHeaders } from 'hono/secure-headers'
 
 import auth from "../src/routes/auth.js"
+import hotel from "../src/routes/hotel.js"
 import { poweredBy } from 'hono/powered-by'
 
 const app = new Hono().basePath("api/v1")
@@ -22,6 +23,9 @@ app.get('/', (c) => {
 
 //auth route
 app.route("/", auth)
+
+//hotel route
+app.route("/", hotel)
 
 serve({
   fetch: app.fetch,

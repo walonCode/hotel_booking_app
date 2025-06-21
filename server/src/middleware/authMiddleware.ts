@@ -3,8 +3,8 @@ import { Jwt } from "hono/utils/jwt";
 import { config } from "../config/configs.js";
 
 interface User {
-    id:string,
-    username:string
+    id:number,
+    roles:string,
     exp:number
 }
 
