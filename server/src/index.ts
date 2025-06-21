@@ -3,10 +3,11 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { logger } from 'hono/logger'
 import { secureHeaders } from 'hono/secure-headers'
+import { poweredBy } from 'hono/powered-by'
 
 import auth from "../src/routes/auth.js"
 import hotel from "../src/routes/hotel.js"
-import { poweredBy } from 'hono/powered-by'
+import booking from "../src/routes/booking.js"
 
 const app = new Hono().basePath("/api/v1")
 
@@ -23,9 +24,11 @@ app.get('/', (c) => {
 
 //auth route
 app.route("/", auth)
-
 //hotel route
 app.route("/", hotel)
+//booking route
+app.route("/", booking)
+
 
 serve({
   fetch: app.fetch,
