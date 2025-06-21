@@ -5,11 +5,13 @@ import { logger } from 'hono/logger'
 import { secureHeaders } from 'hono/secure-headers'
 
 import auth from "../src/routes/auth.js"
+import { poweredBy } from 'hono/powered-by'
 
 const app = new Hono().basePath("api/v1")
 
 //middlwares
 app.use(logger())
+app.use(poweredBy({serverName:"Hotel Server"}))
 app.use(cors({origin:"*",credentials:true, allowMethods:["POST","PATCH","PUT","GET","DELETE"]}))
 app.use(secureHeaders())
 
@@ -18,7 +20,7 @@ app.get('/', (c) => {
   return c.text('Hello Hono!')
 })
 
-//app route
+//auth route
 app.route("/", auth)
 
 serve({
