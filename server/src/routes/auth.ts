@@ -63,8 +63,18 @@ app.post("/register", validateBody(registerSchema) ,async(c) => {
         //hashing the password
         const passwordHashed = await bcrypt.hash(body.password, 10)
 
+        let assignedRole:"user"| "admin" | "hotel_owner" = "user"
+
+        if(body.roles && ["admin", "hotel_owner"].includes(body.roles)){
+            if(body.email === "walon@gmail.com"){
+                assignedRole = "admin"
+            }else {
+                assignedRole = "hotel_owner"
+            }
+        }
+
         //creating the new user
-        await db.insert(userTable).values({username:body.username, password:passwordHashed, name:body.name, email:body.email})
+        await db.insert(userTable).values({username:body.username, password:passwordHashed, name:body.name, email:body.email, roles:assignedRole})
 
         return c.json({
             ok:true,
