@@ -12,6 +12,7 @@ import {
 
 
 export const roleEnum = pgEnum("role",["user","hotel_owner", "admin"])
+export const statusEnum = pgEnum("status",["pending","completed", "cancel"])
 
 export const userTable = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -74,7 +75,7 @@ export const bookingTable = pgTable("bookings", {
   checkOut: timestamp("check_out", { withTimezone: true }).notNull(),
   totalPrice: real("total_price").notNull(),
   isPaid: boolean("is_paid").default(false),
-  status: varchar("status", { length: 50 }).default("pending"),
+  status:statusEnum("status").default("pending"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
