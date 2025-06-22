@@ -8,6 +8,7 @@ import { poweredBy } from 'hono/powered-by'
 import auth from "../src/routes/auth.js"
 import hotel from "../src/routes/hotel.js"
 import booking from "../src/routes/booking.js"
+import room from "../src/routes/room.js"
 
 const app = new Hono().basePath("/api/v1")
 
@@ -28,6 +29,8 @@ app.route("/", auth)
 app.route("/", hotel)
 //booking route
 app.route("/", booking)
+//room route
+app.route("/", room)
 
 
 serve({
