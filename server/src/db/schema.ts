@@ -74,8 +74,8 @@ export const bookingTable = pgTable("bookings", {
   checkIn: timestamp("check_in", { withTimezone: true }).notNull(),
   checkOut: timestamp("check_out", { withTimezone: true }).notNull(),
   totalPrice: real("total_price").notNull(),
-  isPaid: boolean("is_paid").default(false),
-  status:statusEnum("status").default("pending"),
+  isPaid: boolean("is_paid").default(false).notNull(),
+  status:statusEnum("status").default("pending").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });
