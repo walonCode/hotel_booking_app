@@ -1,7 +1,6 @@
 import { z } from "zod"
 
 export const bookingCreateSchema = z.object({
-    userId:z.number().min(2),
     hotelId:z.number().min(2),
     roomId:z.number().min(2),
     checkIn: z.date(),
