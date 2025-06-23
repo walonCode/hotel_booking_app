@@ -9,11 +9,13 @@ import auth from "../src/routes/auth.js"
 import hotel from "../src/routes/hotel.js"
 import booking from "../src/routes/booking.js"
 import room from "../src/routes/room.js"
+import { loggerMiddleware } from './middleware/loggerMiddleware.js'
 
 const app = new Hono().basePath("/api/v1")
 
 //middlwares
 app.use(logger())
+app.use(loggerMiddleware)
 app.use(poweredBy({serverName:"Hotel Server"}))
 app.use(cors({origin:"*",credentials:true, allowMethods:["POST","PATCH","PUT","GET","DELETE"]}))
 app.use(secureHeaders())
